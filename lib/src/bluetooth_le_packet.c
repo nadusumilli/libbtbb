@@ -539,6 +539,7 @@ print128:
 
 void lell_print(const lell_packet *pkt)
 {
+	char data[10000],src[1000];
 	int i, opcode;
 	if (lell_packet_is_data(pkt)) {
 		int llid = pkt->symbols[4] & 0x3;
@@ -592,8 +593,16 @@ void lell_print(const lell_packet *pkt)
 		printf("Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
 		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
 		       pkt->length);
+		sprintf(src, "Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
+		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
+		       pkt->length);
+		strcat(data,src);
 		printf("    Channel Index: %d\n", pkt->channel_idx);
+		sprintf(src, "    Channel Index: %d\n", pkt->channel_idx);
+		strcat(data,src);
 		printf("    Type:  %s\n", lell_get_adv_type_str(pkt));
+		sprintf(src, "    Type:  %s\n", lell_get_adv_type_str(pkt));
+		strcat(data,src);
 
 		switch(pkt->adv_type) {
 			case ADV_IND:
@@ -602,9 +611,16 @@ void lell_print(const lell_packet *pkt)
 				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
 				if (pkt->length-6 > 0) {
 					printf("    AdvData:");
-					for (i = 0; i < pkt->length - 6; ++i)
+					sprintf(src, "    AdvData:");
+					strcat(data,src);
+					for (i = 0; i < pkt->length - 6; ++i){
 						printf(" %02x", pkt->symbols[12+i]);
+						sprintf(src, " %02x", pkt->symbols[12+i]);
+						strcat(data,src);
+					}
 					printf("\n");
+					sprintf(src, "\n");
+					strcat(data,src);
 					_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
 				}
 				break;
@@ -619,9 +635,16 @@ void lell_print(const lell_packet *pkt)
 			case SCAN_RSP:
 				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
 				printf("    ScanRspData:");
-				for (i = 0; i < pkt->length - 6; ++i)
+				sprintf(src, "    ScanRspData:");
+				strcat(data,src);
+				for (i = 0; i < pkt->length - 6; ++i){
 					printf(" %02x", pkt->symbols[12+i]);
+					sprintf(src, " %02x", pkt->symbols[12+i]);
+					strcat(data,src);
+				}
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 				_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
 				break;
 			case CONNECT_REQ:
@@ -636,26 +659,48 @@ void lell_print(const lell_packet *pkt)
 				_dump_16("Timeout: ", pkt->symbols, 32);
 
 				printf("    ChM:");
-				for (i = 0; i < 5; ++i)
+				sprintf(src, "    ChM:");
+				strcat(data,src);
+				for (i = 0; i < 5; ++i){
 					printf(" %02x", pkt->symbols[34+i]);
+					sprintf(src, " %02x", pkt->symbols[34+i]);
+					strcat(data,src);
+				}
 				printf("\n");
+				sprintf(src,"\n");
+				strcat(data,src);
 
 				printf("    Hop: %d\n", pkt->symbols[39] & 0x1f);
+				sprintf(src, "    Hop: %d\n", pkt->symbols[39] & 0x1f);
+				strcat(data,src);
 				printf("    SCA: %d, %s\n",
 						pkt->symbols[39] >> 5,
 						CONNECT_SCA[pkt->symbols[39] >> 5]);
+				sprintf(src, "    SCA: %d, %s\n",
+						pkt->symbols[39] >> 5,
+						CONNECT_SCA[pkt->symbols[39] >> 5]);
+				strcat(data,src);
 				break;
 		}
 	}
 
 	printf("\n");
+	strcat(data,src);
 	printf("    Data: ");
+	strcat(data,src);
 	for (i = 6; i < 6 + pkt->length; ++i)
 		printf(" %02x", pkt->symbols[i]);
+		strcat(data,src);
 	printf("\n");
+	strcat(data,src);
 
 	printf("    CRC:  ");
+	strcat(data,src);
 	for (i = 0; i < 3; ++i)
 		printf(" %02x", pkt->symbols[6 + pkt->length + i]);
+		strcat(data,src);
 	printf("\n");
+	strcat(data,src);
+
+	printf("\n\n\n\n\n\nThis is the data from the copied part!\n%s \n\n\n\n\n Done..................................................................", data);
 }
