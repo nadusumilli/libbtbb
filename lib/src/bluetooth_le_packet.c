@@ -608,6 +608,7 @@ void lell_print(const lell_packet *pkt)
 			case ADV_IND:
 			case ADV_NONCONN_IND:
 			case ADV_SCAN_IND:
+				// This function needs to return a string.
 				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
 				if (pkt->length-6 > 0) {
 					printf("    AdvData:");
@@ -621,18 +622,22 @@ void lell_print(const lell_packet *pkt)
 					printf("\n");
 					sprintf(src, "\n");
 					strcat(data,src);
+					// This function needs to return a string.
 					_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
 				}
 				break;
 			case ADV_DIRECT_IND:
+				// This function needs to return a string.
 				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
 				_dump_addr("InitA: ", pkt->symbols, 12, pkt->adv_rx_add);
 				break;
 			case SCAN_REQ:
+				// This function needs to return a string.
 				_dump_addr("ScanA: ", pkt->symbols, 6, pkt->adv_tx_add);
 				_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add);
 				break;
 			case SCAN_RSP:
+				// This function needs to return a string.
 				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
 				printf("    ScanRspData:");
 				sprintf(src, "    ScanRspData:");
@@ -645,9 +650,11 @@ void lell_print(const lell_packet *pkt)
 				printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
+				// This function needs to return a string.
 				_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
 				break;
 			case CONNECT_REQ:
+				// This function needs to return a string.
 				_dump_addr("InitA: ", pkt->symbols, 6, pkt->adv_tx_add);
 				_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add);
 				_dump_32("AA:    ", pkt->symbols, 18);
@@ -685,21 +692,30 @@ void lell_print(const lell_packet *pkt)
 	}
 
 	printf("\n");
+	sprintf(src, "\n");
 	strcat(data,src);
 	printf("    Data: ");
+	sprintf(src, "    Data: ");
 	strcat(data,src);
-	for (i = 6; i < 6 + pkt->length; ++i)
+	for (i = 6; i < 6 + pkt->length; ++i){
 		printf(" %02x", pkt->symbols[i]);
+		sprintf(src, " %02x", pkt->symbols[i]);
 		strcat(data,src);
+	}
 	printf("\n");
+	sprintf(src, "\n");
 	strcat(data,src);
 
 	printf("    CRC:  ");
+	sprintf(src, "    CRC:  ");
 	strcat(data,src);
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < 3; ++i){
 		printf(" %02x", pkt->symbols[6 + pkt->length + i]);
+		sprintf(src, " %02x", pkt->symbols[6 + pkt->length + i]);
 		strcat(data,src);
+	}
 	printf("\n");
+	sprintf(src, "\n");
 	strcat(data,src);
 
 	printf("\n\n\n\n\n\nThis is the data from the copied part!\n%s \n\n\n\n\n Done..................................................................", data);
