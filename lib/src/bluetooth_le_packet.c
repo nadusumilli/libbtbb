@@ -345,108 +345,185 @@ const char * lell_get_adv_type_str(const lell_packet *pkt)
 	return "UNKNOWN";
 }
 
-static void _dump_addr(const char *name, const uint8_t *buf, int offset, int random) {
+static char * _dump_addr(const char *name, const uint8_t *buf, int offset, int random) {
 	int i;
+	char src[1000];
+	char* data = malloc(1000);
 	printf("    %s%02x", name, buf[offset+5]);
+	sprintf(src, "    %s%02x", name, buf[offset+5]);
+	strcat(data,src);
 	for (i = 4; i >= 0; --i)
 		printf(":%02x", buf[offset+i]);
-	printf(" (%s)\n", random ? "random" : "public");
+		sprintf(src, ":%02x", buf[offset+i]);
+		strcat(data,src);
+	printf(src, " (%s)\n", random ? "random" : "public");
+	sprintf(src, " (%s)\n", random ? "random" : "public");
+	strcat(data,src);
+	return data;
 }
 
-static void _dump_8(const char *name, const uint8_t *buf, int offset) {
+static char * _dump_8(const char *name, const uint8_t *buf, int offset) {
+	char* src=malloc(1000);
 	printf("    %s%02x (%d)\n", name, buf[offset], buf[offset]);
+	sprintf(src, "    %s%02x (%d)\n", name, buf[offset], buf[offset]);
+	return src;
 }
 
-static void _dump_16(const char *name, const uint8_t *buf, int offset) {
+static char * _dump_16(const char *name, const uint8_t *buf, int offset) {
 	uint16_t val = buf[offset+1] << 8 | buf[offset];
+	char* src=malloc(1000);
 	printf("    %s%04x (%d)\n", name, val, val);
+	sprintf(src, "    %s%04x (%d)\n", name, val, val);
+	return src;
 }
 
-static void _dump_24(char *name, const uint8_t *buf, int offset) {
+static char * _dump_24(char *name, const uint8_t *buf, int offset) {
 	uint32_t val = buf[offset+2] << 16 | buf[offset+1] << 8 | buf[offset];
+	char* src = malloc(1000);
 	printf("    %s%06x\n", name, val);
+	sprintf(src, "    %s%06x\n", name, val);
+
+	return src;
 }
 
-static void _dump_32(const char *name, const uint8_t *buf, int offset) {
+static char * _dump_32(const char *name, const uint8_t *buf, int offset) {
 	uint32_t val = buf[offset+3] << 24 |
 				   buf[offset+2] << 16 |
 				   buf[offset+1] << 8 |
 				   buf[offset+0];
+	char* src=malloc(1000);
 	printf("    %s%08x\n", name, val);
+	sprintf(src, "    %s%08x\n", name, val);
+	return src;
 }
 
-static void _dump_uuid(const uint8_t *uuid) {
+static char * _dump_uuid(const uint8_t *uuid) {
 	int i;
+	char src[1000];
+	char* data=malloc(1000);
 	for (i = 0; i < 4; ++i)
 		printf("%02x", uuid[i]);
+		sprintf(src, "%02x", uuid[i]);
+		strcat(data,src);
 	printf("-");
+	sprintf(src, "-");
+	strcat(data,src);
 	for (i = 4; i < 6; ++i)
 		printf("%02x", uuid[i]);
+		sprintf(src, "%02x", uuid[i]);
+		strcat(data,src);
 	printf("-");
+	sprintf(src, "-");
+	strcat(data,src);
 	for (i = 6; i < 8; ++i)
 		printf("%02x", uuid[i]);
+		sprintf(src, "%02x", uuid[i]);
+		strcat(data,src);
 	printf("-");
+	sprintf(src, "-");
+	strcat(data,src);
 	for (i = 8; i < 10; ++i)
 		printf("%02x", uuid[i]);
+		sprintf(src, "%02x", uuid[i]);
+		strcat(data,src);
 	printf("-");
+	sprintf(src, "-");
+	strcat(data,src);
 	for (i = 10; i < 16; ++i)
 		printf("%02x", uuid[i]);
+		printf(src, "%02x", uuid[i]);
+		strcat(data,src);
+
+	return data;
 }
 
 // Refer to pg 1735 of Bluetooth Core Spec 4.0
-static void _dump_scan_rsp_data(const uint8_t *buf, int len) {
+static char * _dump_scan_rsp_data(const uint8_t *buf, int len) {
 	int pos = 0;
 	int sublen, i;
 	uint8_t type;
 	uint16_t val;
 	char *cval;
+	char src[1000];
+	char* data = malloc(10000);
 
 	while (pos < len) {
 		sublen = buf[pos];
 		++pos;
 		if (pos + sublen > len) {
 			printf("Error: attempt to read past end of buffer (%d + %d > %d)\n", pos, sublen, len);
-			return;
+			sprintf(src, "Error: attempt to read past end of buffer (%d + %d > %d)\n", pos, sublen, len);
+			strcat(data,src);
+			return data;
 		}
 		if (sublen == 0) {
 			printf("Early return due to 0 length\n");
-			return;
+			sprintf(src, "Early return due to 0 length\n");
+			strcat(data,src);
+			return data;
 		}
 		type = buf[pos];
 		printf("        Type %02x", type);
+		sprintf(src, "        Type %02x", type);
+		strcat(data,src);
 		switch (type) {
 			case 0x01:
 				printf(" (Flags)\n");
+				sprintf(src, " (Flags)\n");
+				strcat(data,src);
 				printf("           ");
-				for (i = 0; i < 8; ++i)
+				sprintf(src, "           ");
+				strcat(data,src);
+				for (i = 0; i < 8; ++i){
 					printf("%d", buf[pos+1] & (1 << (7-i)) ? 1 : 0);
+					sprintf(src, "%d", buf[pos+1] & (1 << (7-i)) ? 1 : 0);
+					strcat(data,src);
+				}
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 				for (i = 0; i < 8; ++i) {
 					if (buf[pos+1] & (1 << i)) {
 						printf("               ");
+						sprintf(src, "               ");
+						strcat(data,src);
 						printf("%s\n", FLAGS[i]);
+						sprintf(src, "%s\n", FLAGS[i]);
+						strcat(data,src);
 					}
 				}
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 				break;
 			case 0x02:
 				printf(" (16-bit Service UUIDs, more available)\n");
+				sprintf(src, " (16-bit Service UUIDs, more available)\n");
+				strcat(data,src);
 				goto print16;
 			case 0x03:
 				printf(" (16-bit Service UUIDs) \n");
+				sprintf(src, " (16-bit Service UUIDs) \n");
+				strcat(data,src);
 print16:
 				if ((sublen - 1) % 2 == 0) {
 					for (i = 0; i < sublen - 1; i += 2) {
 						uint16_t *uuid = (uint16_t *)&buf[pos+1+i];
 						printf("           %04x\n", *uuid);
+						sprintf(src, "           %04x\n", *uuid);
+						strcat(data,src);
 					}
 				}
 				break;
 			case 0x06:
 				printf(" (128-bit Service UUIDs, more available)\n");
+				sprintf(src, " (128-bit Service UUIDs, more available)\n");
+				strcat(data,src);
 				goto print128;
 			case 0x07:
 				printf(" (128-bit Service UUIDs)\n");
+				sprintf(src, " (128-bit Service UUIDs)\n");
+				strcat(data,src);
 print128:
 				if ((sublen - 1) % 16 == 0) {
 					uint8_t uuid[16];
@@ -454,87 +531,163 @@ print128:
 						uuid[15 - (i % 16)] = buf[pos+1+i];
 						if ((i & 15) == 15) {
 							printf("           ");
-							_dump_uuid(uuid);
+							sprintf(src, "           ");
+							strcat(data,src);
+							sprintf(src, "%s",_dump_uuid(uuid));
+							strcat(data,src);
 							printf("\n");
+							sprintf(src, "\n");
+							strcat(data,src);
 						}
 					}
 				}
 				else {
 					printf("Wrong length (%d, must be divisible by 16)\n", sublen-1);
+					sprintf(src, "Wrong length (%d, must be divisible by 16)\n", sublen-1);
+					strcat(data,src);
 				}
 				break;
 			case 0x09:
 				printf(" (Complete Local Name)\n");
+				sprintf(src, " (Complete Local Name)\n");
+				strcat(data,src);
 				printf("           ");
-				for (i = 1; i < sublen; ++i)
+				sprintf(src, "           ");
+				strcat(data,src);
+				for (i = 1; i < sublen; ++i){
 					printf("%c", isprint(buf[pos+i]) ? buf[pos+i] : '.');
+					sprintf(src, "%c", isprint(buf[pos+i]) ? buf[pos+i] : '.');
+					strcat(data,src);
+				}
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 				break;
 			case 0x0a:
 				printf(" (Tx Power Level)\n");
+				sprintf(src, " (Tx Power Level)\n");
+				strcat(data,src);
 				printf("           ");
+				sprintf(src, "           ");
+				strcat(data,src);
 				if (sublen-1 == 1) {
 					cval = (char *)&buf[pos+1];
 					printf("%d dBm\n", *cval);
+					sprintf(src, "%d dBm\n", *cval);
+					strcat(data,src);
 				} else {
 					printf("Wrong length (%d, should be 1)\n", sublen-1);
+					sprintf(src, "Wrong length (%d, should be 1)\n", sublen-1);
+					strcat(data,src);
 				}
 				break;
 			case 0x12:
 				printf(" (Slave Connection Interval Range)\n");
+				sprintf(src, " (Slave Connection Interval Range)\n");
+				strcat(data,src);
 				printf("           ");
+				sprintf(src, "           ");
+				strcat(data,src);
 				if (sublen-1 == 4) {
 					val = (buf[pos+2] << 8) | buf[pos+1];
 					printf("(%0.2f, ", val * 1.25);
+					sprintf(src, "(%0.2f, ", val * 1.25);
+					strcat(data,src);
 					val = (buf[pos+4] << 8) | buf[pos+3];
 					printf("%0.2f) ms\n", val * 1.25);
+					sprintf(src, "%0.2f) ms\n", val * 1.25);
+					strcat(data,src);
 				}
 				else {
 					printf("Wrong length (%d, should be 4)\n", sublen-1);
+					sprintf(src, "Wrong length (%d, should be 4)\n", sublen-1);
+					strcat(data,src);
 				}
 				break;
 			case 0x16:
 				printf(" (Service Data)\n");
+				sprintf(src, " (Service Data)\n");
+				strcat(data,src);
 				printf("           ");
+				sprintf(src, "           ");
+				strcat(data,src);
 				if (sublen-1 >= 2) {
 					val = (buf[pos+2] << 8) | buf[pos+1];
 					printf("UUID: %02x", val);
+					sprintf(src, "UUID: %02x", val);
+					strcat(data,src);
 					if (sublen-1 > 2) {
 						printf(", Additional:");
-						for (i = 3; i < sublen; ++i)
+						sprintf(src, ", Additional:");
+						strcat(data,src);
+						for (i = 3; i < sublen; ++i){
 							printf(" %02x", buf[pos+i]);
+							sprintf(src, " %02x", buf[pos+i]);
+							strcat(data,src);
+						}
 					}
 					printf("\n");
+					sprintf(src, "\n");
+					strcat(data,src);
 				}
 				else {
 					printf("Wrong length (%d, should be >= 2)\n", sublen-1);
+					sprintf(src, "Wrong length (%d, should be >= 2)\n", sublen-1);
+					strcat(data,src);
 				}
 				break;
 			case 0xff:
 				printf(" (Manufacturer Specific Data)\n");
+				sprintf(src, " (Manufacturer Specific Data)\n");
+				strcat(data,src);
 				printf("           ");
+				sprintf(src,"           ");
+				strcat(data,src);
 				if (sublen - 1 >= 2) {
 					uint16_t company = (buf[pos+2] << 8) | buf[pos+1];
 					printf("Company: %s\n", bt_compidtostr(company));
+					sprintf(src, "Company: %s\n", bt_compidtostr(company));
+					strcat(data,src);
 					printf("           ");
+					sprintf(src, "           ");
+					strcat(data,src);
 					printf("Data:");
-					for (i = 3; i < sublen; ++i)
+					sprintf(src, "Data:");
+					strcat(data,src);
+					for (i = 3; i < sublen; ++i){
 						printf(" %02x", buf[pos+i]);
+						sprintf(src, " %02x", buf[pos+i]);
+						strcat(data,src);
+					}
 					printf("\n");
+					sprintf(src, "\n");				
+					strcat(data,src);
 				}
 				else {
 					printf("Wrong length (%d, should be >= 2)\n", sublen-1);
+					sprintf(src, "Wrong length (%d, should be >= 2)\n", sublen-1);
+					strcat(data,src);
 				}
 				break;
 			default:
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 				printf("           ");
-				for (i = 1; i < sublen; ++i)
+				sprintf(src, "           ");
+				strcat(data,src);
+				for (i = 1; i < sublen; ++i){
 					printf(" %02x", buf[pos+i]);
+					sprintf(src, " %02x", buf[pos+i]);
+					strcat(data,src);
+				}
 				printf("\n");
+				sprintf(src, "\n");
+				strcat(data,src);
 		}
 		pos += sublen;
 	}
+	return data;
 }
 
 void lell_print(const lell_packet *pkt)
@@ -553,41 +706,55 @@ void lell_print(const lell_packet *pkt)
 		printf("Data / AA %08x (%s) / %2d bytes\n", pkt->access_address,
 		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
 		       pkt->length);
+		sprintf(src, "Data / AA %08x (%s) / %2d bytes\n", pkt->access_address,
+		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
+		       pkt->length);
+		strcat(data,src);
 		printf("    Channel Index: %d\n", pkt->channel_idx);
+		sprintf(src, "    Channel Index: %d\n", pkt->channel_idx);
+		strcat(data,src);
 		printf("    LLID: %d / %s\n", llid, llid_str[llid]);
+		sprintf(src,"    LLID: %d / %s\n", llid, llid_str[llid]);
+		strcat(data,src);
 		printf("    NESN: %d  SN: %d  MD: %d\n", (pkt->symbols[4] >> 2) & 1,
 												 (pkt->symbols[4] >> 3) & 1,
 												 (pkt->symbols[4] >> 4) & 1);
+		sprintf(src,"    NESN: %d  SN: %d  MD: %d\n", (pkt->symbols[4] >> 2) & 1,
+												 (pkt->symbols[4] >> 3) & 1,
+												 (pkt->symbols[4] >> 4) & 1);
+		strcat(data,src);
 		switch (llid) {
-		case 3: // LL Control PDU
-			opcode = pkt->symbols[6];
-			static const char *opcode_str[] = {
-				"LL_CONNECTION_UPDATE_REQ",
-				"LL_CHANNEL_MAP_REQ",
-				"LL_TERMINATE_IND",
-				"LL_ENC_REQ",
-				"LL_ENC_RSP",
-				"LL_START_ENC_REQ",
-				"LL_START_ENC_RSP",
-				"LL_UNKNOWN_RSP",
-				"LL_FEATURE_REQ",
-				"LL_FEATURE_RSP",
-				"LL_PAUSE_ENC_REQ",
-				"LL_PAUSE_ENC_RSP",
-				"LL_VERSION_IND",
-				"LL_REJECT_IND",
-				"LL_SLAVE_FEATURE_REQ",
-				"LL_CONNECTION_PARAM_REQ",
-				"LL_CONNECTION_PARAM_RSP",
-				"LL_REJECT_IND_EXT",
-				"LL_PING_REQ",
-				"LL_PING_RSP",
-				"Reserved for Future Use",
-			};
-			printf("    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
-			break;
-		default:
-			break;
+			case 3: // LL Control PDU
+				opcode = pkt->symbols[6];
+				static const char *opcode_str[] = {
+					"LL_CONNECTION_UPDATE_REQ",
+					"LL_CHANNEL_MAP_REQ",
+					"LL_TERMINATE_IND",
+					"LL_ENC_REQ",
+					"LL_ENC_RSP",
+					"LL_START_ENC_REQ",
+					"LL_START_ENC_RSP",
+					"LL_UNKNOWN_RSP",
+					"LL_FEATURE_REQ",
+					"LL_FEATURE_RSP",
+					"LL_PAUSE_ENC_REQ",
+					"LL_PAUSE_ENC_RSP",
+					"LL_VERSION_IND",
+					"LL_REJECT_IND",
+					"LL_SLAVE_FEATURE_REQ",
+					"LL_CONNECTION_PARAM_REQ",
+					"LL_CONNECTION_PARAM_RSP",
+					"LL_REJECT_IND_EXT",
+					"LL_PING_REQ",
+					"LL_PING_RSP",
+					"Reserved for Future Use",
+				};
+				printf("    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
+				sprintf(src, "    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
+				strcat(data,src);
+				break;
+			default:
+				break;
 		}
 	} else {
 		printf("Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
@@ -609,7 +776,7 @@ void lell_print(const lell_packet *pkt)
 			case ADV_NONCONN_IND:
 			case ADV_SCAN_IND:
 				// This function needs to return a string.
-				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
+				strcat(data, _dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add));
 				if (pkt->length-6 > 0) {
 					printf("    AdvData:");
 					sprintf(src, "    AdvData:");
@@ -623,22 +790,22 @@ void lell_print(const lell_packet *pkt)
 					sprintf(src, "\n");
 					strcat(data,src);
 					// This function needs to return a string.
-					_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
+					strcat(data, _dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6));
 				}
 				break;
 			case ADV_DIRECT_IND:
 				// This function needs to return a string.
-				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
-				_dump_addr("InitA: ", pkt->symbols, 12, pkt->adv_rx_add);
+				strcat(data,_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add));
+				strcat(data,_dump_addr("InitA: ", pkt->symbols, 12, pkt->adv_rx_add));
 				break;
 			case SCAN_REQ:
 				// This function needs to return a string.
-				_dump_addr("ScanA: ", pkt->symbols, 6, pkt->adv_tx_add);
-				_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add);
+				strcat(data,_dump_addr("ScanA: ", pkt->symbols, 6, pkt->adv_tx_add));
+				strcat(data,_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add));
 				break;
 			case SCAN_RSP:
 				// This function needs to return a string.
-				_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add);
+				strcat(data,_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add));
 				printf("    ScanRspData:");
 				sprintf(src, "    ScanRspData:");
 				strcat(data,src);
@@ -651,19 +818,19 @@ void lell_print(const lell_packet *pkt)
 				sprintf(src, "\n");
 				strcat(data,src);
 				// This function needs to return a string.
-				_dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6);
+				strcat(data, _dump_scan_rsp_data(&pkt->symbols[12], pkt->length-6));
 				break;
 			case CONNECT_REQ:
 				// This function needs to return a string.
-				_dump_addr("InitA: ", pkt->symbols, 6, pkt->adv_tx_add);
-				_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add);
-				_dump_32("AA:    ", pkt->symbols, 18);
-				_dump_24("CRCInit: ", pkt->symbols, 22);
-				_dump_8("WinSize: ", pkt->symbols, 25);
-				_dump_16("WinOffset: ", pkt->symbols, 26);
-				_dump_16("Interval: ", pkt->symbols, 28);
-				_dump_16("Latency: ", pkt->symbols, 30);
-				_dump_16("Timeout: ", pkt->symbols, 32);
+				strcat(data,_dump_addr("InitA: ", pkt->symbols, 6, pkt->adv_tx_add));
+				strcat(data,_dump_addr("AdvA:  ", pkt->symbols, 12, pkt->adv_rx_add));
+				strcat(data,_dump_32("AA:    ", pkt->symbols, 18));
+				strcat(data,_dump_24("CRCInit: ", pkt->symbols, 22));
+				strcat(data,_dump_8("WinSize: ", pkt->symbols, 25));
+				strcat(data,_dump_16("WinOffset: ", pkt->symbols, 26));
+				strcat(data,_dump_16("Interval: ", pkt->symbols, 28));
+				strcat(data,_dump_16("Latency: ", pkt->symbols, 30));
+				strcat(data,_dump_16("Timeout: ", pkt->symbols, 32));
 
 				printf("    ChM:");
 				sprintf(src, "    ChM:");
@@ -718,5 +885,5 @@ void lell_print(const lell_packet *pkt)
 	sprintf(src, "\n");
 	strcat(data,src);
 
-	printf("\n\n\n\n\n\nThis is the data from the copied part!\n%s \n\n\n\n\n Done..................................................................", data);
+	printf("\n\n\n\n\n\nThis is the data from the copied part!\n%s \n Done..................................................................", data);
 }
