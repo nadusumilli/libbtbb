@@ -352,11 +352,12 @@ static char * _dump_addr(const char *name, const uint8_t *buf, int offset, int r
 	printf("    %s%02x", name, buf[offset+5]);
 	sprintf(src, "    %s%02x", name, buf[offset+5]);
 	strcat(data,src);
-	for (i = 4; i >= 0; --i)
+	for (i = 4; i >= 0; --i){
 		printf(":%02x", buf[offset+i]);
 		sprintf(src, ":%02x", buf[offset+i]);
 		strcat(data,src);
-	printf(src, " (%s)\n", random ? "random" : "public");
+	}
+	printf(" (%s)\n", random ? "random" : "public");
 	sprintf(src, " (%s)\n", random ? "random" : "public");
 	strcat(data,src);
 	return data;
@@ -692,7 +693,7 @@ print128:
 
 void lell_print(const lell_packet *pkt)
 {
-	char data[10000],src[1000];
+	char data[10000],src[1000], command[10050];
 	int i, opcode;
 	if (lell_packet_is_data(pkt)) {
 		int llid = pkt->symbols[4] & 0x3;
@@ -884,6 +885,11 @@ void lell_print(const lell_packet *pkt)
 	printf("\n");
 	sprintf(src, "\n");
 	strcat(data,src);
+	printf("\n\n****************************\nThis is the data:\n%s\n======================================\n",data);
+	// sprintf(command,"pcaps 1 packet \"%s\"",data);
+	// system(command);
+	memset(src, 0, sizeof src);
+	memset(data, 0, sizeof data);
+	memset(command, 0, sizeof command);
 
-	printf("\n\n\n\n\n\nThis is the data from the copied part!\n%s \n Done..................................................................", data);
 }
