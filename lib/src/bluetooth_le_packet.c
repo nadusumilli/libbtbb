@@ -349,15 +349,15 @@ static char * _dump_addr(const char *name, const uint8_t *buf, int offset, int r
 	int i;
 	char src[1000];
 	char* data = malloc(1000);
-	printf("    %s%02x", name, buf[offset+5]);
+	// printf("    %s%02x", name, buf[offset+5]);
 	sprintf(src, "    %s%02x", name, buf[offset+5]);
 	strcat(data,src);
 	for (i = 4; i >= 0; --i){
-		printf(":%02x", buf[offset+i]);
+		// printf(":%02x", buf[offset+i]);
 		sprintf(src, ":%02x", buf[offset+i]);
 		strcat(data,src);
 	}
-	printf(" (%s)\n", random ? "random" : "public");
+	// printf(" (%s)\n", random ? "random" : "public");
 	sprintf(src, " (%s)\n", random ? "random" : "public");
 	strcat(data,src);
 	return data;
@@ -365,7 +365,7 @@ static char * _dump_addr(const char *name, const uint8_t *buf, int offset, int r
 
 static char * _dump_8(const char *name, const uint8_t *buf, int offset) {
 	char* src=malloc(1000);
-	printf("    %s%02x (%d)\n", name, buf[offset], buf[offset]);
+	// printf("    %s%02x (%d)\n", name, buf[offset], buf[offset]);
 	sprintf(src, "    %s%02x (%d)\n", name, buf[offset], buf[offset]);
 	return src;
 }
@@ -373,7 +373,7 @@ static char * _dump_8(const char *name, const uint8_t *buf, int offset) {
 static char * _dump_16(const char *name, const uint8_t *buf, int offset) {
 	uint16_t val = buf[offset+1] << 8 | buf[offset];
 	char* src=malloc(1000);
-	printf("    %s%04x (%d)\n", name, val, val);
+	// printf("    %s%04x (%d)\n", name, val, val);
 	sprintf(src, "    %s%04x (%d)\n", name, val, val);
 	return src;
 }
@@ -381,7 +381,7 @@ static char * _dump_16(const char *name, const uint8_t *buf, int offset) {
 static char * _dump_24(char *name, const uint8_t *buf, int offset) {
 	uint32_t val = buf[offset+2] << 16 | buf[offset+1] << 8 | buf[offset];
 	char* src = malloc(1000);
-	printf("    %s%06x\n", name, val);
+	// printf("    %s%06x\n", name, val);
 	sprintf(src, "    %s%06x\n", name, val);
 
 	return src;
@@ -393,7 +393,7 @@ static char * _dump_32(const char *name, const uint8_t *buf, int offset) {
 				   buf[offset+1] << 8 |
 				   buf[offset+0];
 	char* src=malloc(1000);
-	printf("    %s%08x\n", name, val);
+	// printf("    %s%08x\n", name, val);
 	sprintf(src, "    %s%08x\n", name, val);
 	return src;
 }
@@ -403,36 +403,36 @@ static char * _dump_uuid(const uint8_t *uuid) {
 	char src[1000];
 	char* data=malloc(1000);
 	for (i = 0; i < 4; ++i)
-		printf("%02x", uuid[i]);
+		// printf("%02x", uuid[i]);
 		sprintf(src, "%02x", uuid[i]);
 		strcat(data,src);
-	printf("-");
+	// printf("-");
 	sprintf(src, "-");
 	strcat(data,src);
 	for (i = 4; i < 6; ++i)
-		printf("%02x", uuid[i]);
+		// printf("%02x", uuid[i]);
 		sprintf(src, "%02x", uuid[i]);
 		strcat(data,src);
-	printf("-");
+	// printf("-");
 	sprintf(src, "-");
 	strcat(data,src);
 	for (i = 6; i < 8; ++i)
-		printf("%02x", uuid[i]);
+		// printf("%02x", uuid[i]);
 		sprintf(src, "%02x", uuid[i]);
 		strcat(data,src);
-	printf("-");
+	// printf("-");
 	sprintf(src, "-");
 	strcat(data,src);
 	for (i = 8; i < 10; ++i)
-		printf("%02x", uuid[i]);
+		// printf("%02x", uuid[i]);
 		sprintf(src, "%02x", uuid[i]);
 		strcat(data,src);
-	printf("-");
+	// printf("-");
 	sprintf(src, "-");
 	strcat(data,src);
 	for (i = 10; i < 16; ++i)
-		printf("%02x", uuid[i]);
-		printf(src, "%02x", uuid[i]);
+		// printf("%02x", uuid[i]);
+		sprintf(src, "%02x", uuid[i]);
 		strcat(data,src);
 
 	return data;
@@ -452,77 +452,77 @@ static char * _dump_scan_rsp_data(const uint8_t *buf, int len) {
 		sublen = buf[pos];
 		++pos;
 		if (pos + sublen > len) {
-			printf("Error: attempt to read past end of buffer (%d + %d > %d)\n", pos, sublen, len);
+			// printf("Error: attempt to read past end of buffer (%d + %d > %d)\n", pos, sublen, len);
 			sprintf(src, "Error: attempt to read past end of buffer (%d + %d > %d)\n", pos, sublen, len);
 			strcat(data,src);
 			return data;
 		}
 		if (sublen == 0) {
-			printf("Early return due to 0 length\n");
+			// printf("Early return due to 0 length\n");
 			sprintf(src, "Early return due to 0 length\n");
 			strcat(data,src);
 			return data;
 		}
 		type = buf[pos];
-		printf("        Type %02x", type);
+		// printf("        Type %02x", type);
 		sprintf(src, "        Type %02x", type);
 		strcat(data,src);
 		switch (type) {
 			case 0x01:
-				printf(" (Flags)\n");
+				// printf(" (Flags)\n");
 				sprintf(src, " (Flags)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				for (i = 0; i < 8; ++i){
-					printf("%d", buf[pos+1] & (1 << (7-i)) ? 1 : 0);
+					// printf("%d", buf[pos+1] & (1 << (7-i)) ? 1 : 0);
 					sprintf(src, "%d", buf[pos+1] & (1 << (7-i)) ? 1 : 0);
 					strcat(data,src);
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
 				for (i = 0; i < 8; ++i) {
 					if (buf[pos+1] & (1 << i)) {
-						printf("               ");
+						// printf("               ");
 						sprintf(src, "               ");
 						strcat(data,src);
-						printf("%s\n", FLAGS[i]);
+						// printf("%s\n", FLAGS[i]);
 						sprintf(src, "%s\n", FLAGS[i]);
 						strcat(data,src);
 					}
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
 				break;
 			case 0x02:
-				printf(" (16-bit Service UUIDs, more available)\n");
+				// printf(" (16-bit Service UUIDs, more available)\n");
 				sprintf(src, " (16-bit Service UUIDs, more available)\n");
 				strcat(data,src);
 				goto print16;
 			case 0x03:
-				printf(" (16-bit Service UUIDs) \n");
+				// printf(" (16-bit Service UUIDs) \n");
 				sprintf(src, " (16-bit Service UUIDs) \n");
 				strcat(data,src);
 print16:
 				if ((sublen - 1) % 2 == 0) {
 					for (i = 0; i < sublen - 1; i += 2) {
 						uint16_t *uuid = (uint16_t *)&buf[pos+1+i];
-						printf("           %04x\n", *uuid);
+						// printf("           %04x\n", *uuid);
 						sprintf(src, "           %04x\n", *uuid);
 						strcat(data,src);
 					}
 				}
 				break;
 			case 0x06:
-				printf(" (128-bit Service UUIDs, more available)\n");
+				// printf(" (128-bit Service UUIDs, more available)\n");
 				sprintf(src, " (128-bit Service UUIDs, more available)\n");
 				strcat(data,src);
 				goto print128;
 			case 0x07:
-				printf(" (128-bit Service UUIDs)\n");
+				// printf(" (128-bit Service UUIDs)\n");
 				sprintf(src, " (128-bit Service UUIDs)\n");
 				strcat(data,src);
 print128:
@@ -531,158 +531,158 @@ print128:
 					for (i = 0; i < sublen - 1; ++i) {
 						uuid[15 - (i % 16)] = buf[pos+1+i];
 						if ((i & 15) == 15) {
-							printf("           ");
+							// printf("           ");
 							sprintf(src, "           ");
 							strcat(data,src);
 							sprintf(src, "%s",_dump_uuid(uuid));
 							strcat(data,src);
-							printf("\n");
+							// printf("\n");
 							sprintf(src, "\n");
 							strcat(data,src);
 						}
 					}
 				}
 				else {
-					printf("Wrong length (%d, must be divisible by 16)\n", sublen-1);
+					// printf("Wrong length (%d, must be divisible by 16)\n", sublen-1);
 					sprintf(src, "Wrong length (%d, must be divisible by 16)\n", sublen-1);
 					strcat(data,src);
 				}
 				break;
 			case 0x09:
-				printf(" (Complete Local Name)\n");
+				// printf(" (Complete Local Name)\n");
 				sprintf(src, " (Complete Local Name)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				for (i = 1; i < sublen; ++i){
-					printf("%c", isprint(buf[pos+i]) ? buf[pos+i] : '.');
+					// printf("%c", isprint(buf[pos+i]) ? buf[pos+i] : '.');
 					sprintf(src, "%c", isprint(buf[pos+i]) ? buf[pos+i] : '.');
 					strcat(data,src);
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
 				break;
 			case 0x0a:
-				printf(" (Tx Power Level)\n");
+				// printf(" (Tx Power Level)\n");
 				sprintf(src, " (Tx Power Level)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				if (sublen-1 == 1) {
 					cval = (char *)&buf[pos+1];
-					printf("%d dBm\n", *cval);
+					// printf("%d dBm\n", *cval);
 					sprintf(src, "%d dBm\n", *cval);
 					strcat(data,src);
 				} else {
-					printf("Wrong length (%d, should be 1)\n", sublen-1);
+					// printf("Wrong length (%d, should be 1)\n", sublen-1);
 					sprintf(src, "Wrong length (%d, should be 1)\n", sublen-1);
 					strcat(data,src);
 				}
 				break;
 			case 0x12:
-				printf(" (Slave Connection Interval Range)\n");
+				// printf(" (Slave Connection Interval Range)\n");
 				sprintf(src, " (Slave Connection Interval Range)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				if (sublen-1 == 4) {
 					val = (buf[pos+2] << 8) | buf[pos+1];
-					printf("(%0.2f, ", val * 1.25);
+					// printf("(%0.2f, ", val * 1.25);
 					sprintf(src, "(%0.2f, ", val * 1.25);
 					strcat(data,src);
 					val = (buf[pos+4] << 8) | buf[pos+3];
-					printf("%0.2f) ms\n", val * 1.25);
+					// printf("%0.2f) ms\n", val * 1.25);
 					sprintf(src, "%0.2f) ms\n", val * 1.25);
 					strcat(data,src);
 				}
 				else {
-					printf("Wrong length (%d, should be 4)\n", sublen-1);
+					// printf("Wrong length (%d, should be 4)\n", sublen-1);
 					sprintf(src, "Wrong length (%d, should be 4)\n", sublen-1);
 					strcat(data,src);
 				}
 				break;
 			case 0x16:
-				printf(" (Service Data)\n");
+				// printf(" (Service Data)\n");
 				sprintf(src, " (Service Data)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				if (sublen-1 >= 2) {
 					val = (buf[pos+2] << 8) | buf[pos+1];
-					printf("UUID: %02x", val);
+					// printf("UUID: %02x", val);
 					sprintf(src, "UUID: %02x", val);
 					strcat(data,src);
 					if (sublen-1 > 2) {
-						printf(", Additional:");
+						// printf(", Additional:");
 						sprintf(src, ", Additional:");
 						strcat(data,src);
 						for (i = 3; i < sublen; ++i){
-							printf(" %02x", buf[pos+i]);
+							// printf(" %02x", buf[pos+i]);
 							sprintf(src, " %02x", buf[pos+i]);
 							strcat(data,src);
 						}
 					}
-					printf("\n");
+					// printf("\n");
 					sprintf(src, "\n");
 					strcat(data,src);
 				}
 				else {
-					printf("Wrong length (%d, should be >= 2)\n", sublen-1);
+					// printf("Wrong length (%d, should be >= 2)\n", sublen-1);
 					sprintf(src, "Wrong length (%d, should be >= 2)\n", sublen-1);
 					strcat(data,src);
 				}
 				break;
 			case 0xff:
-				printf(" (Manufacturer Specific Data)\n");
+				// printf(" (Manufacturer Specific Data)\n");
 				sprintf(src, " (Manufacturer Specific Data)\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src,"           ");
 				strcat(data,src);
 				if (sublen - 1 >= 2) {
 					uint16_t company = (buf[pos+2] << 8) | buf[pos+1];
-					printf("Company: %s\n", bt_compidtostr(company));
+					// printf("Company: %s\n", bt_compidtostr(company));
 					sprintf(src, "Company: %s\n", bt_compidtostr(company));
 					strcat(data,src);
-					printf("           ");
+					// printf("           ");
 					sprintf(src, "           ");
 					strcat(data,src);
-					printf("Data:");
+					// printf("Data:");
 					sprintf(src, "Data:");
 					strcat(data,src);
 					for (i = 3; i < sublen; ++i){
-						printf(" %02x", buf[pos+i]);
+						// printf(" %02x", buf[pos+i]);
 						sprintf(src, " %02x", buf[pos+i]);
 						strcat(data,src);
 					}
-					printf("\n");
+					// printf("\n");
 					sprintf(src, "\n");				
 					strcat(data,src);
 				}
 				else {
-					printf("Wrong length (%d, should be >= 2)\n", sublen-1);
+					// printf("Wrong length (%d, should be >= 2)\n", sublen-1);
 					sprintf(src, "Wrong length (%d, should be >= 2)\n", sublen-1);
 					strcat(data,src);
 				}
 				break;
 			default:
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
-				printf("           ");
+				// printf("           ");
 				sprintf(src, "           ");
 				strcat(data,src);
 				for (i = 1; i < sublen; ++i){
-					printf(" %02x", buf[pos+i]);
+					// printf(" %02x", buf[pos+i]);
 					sprintf(src, " %02x", buf[pos+i]);
 					strcat(data,src);
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
 		}
@@ -695,6 +695,7 @@ void lell_print(const lell_packet *pkt)
 {
 	char data[10000],src[1000], command[10050];
 	int i, opcode;
+	static int counter=0;
 	if (lell_packet_is_data(pkt)) {
 		int llid = pkt->symbols[4] & 0x3;
 		static const char *llid_str[] = {
@@ -704,22 +705,22 @@ void lell_print(const lell_packet *pkt)
 			"LL Control PDU",
 		};
 
-		printf("Data / AA %08x (%s) / %2d bytes\n", pkt->access_address,
-		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
-		       pkt->length);
+		// printf("Data / AA %08x (%s) / %2d bytes\n", pkt->access_address,
+		//        pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
+		//        pkt->length);
 		sprintf(src, "Data / AA %08x (%s) / %2d bytes\n", pkt->access_address,
 		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
 		       pkt->length);
 		strcat(data,src);
-		printf("    Channel Index: %d\n", pkt->channel_idx);
+		// printf("    Channel Index: %d\n", pkt->channel_idx);
 		sprintf(src, "    Channel Index: %d\n", pkt->channel_idx);
 		strcat(data,src);
-		printf("    LLID: %d / %s\n", llid, llid_str[llid]);
+		// printf("    LLID: %d / %s\n", llid, llid_str[llid]);
 		sprintf(src,"    LLID: %d / %s\n", llid, llid_str[llid]);
 		strcat(data,src);
-		printf("    NESN: %d  SN: %d  MD: %d\n", (pkt->symbols[4] >> 2) & 1,
-												 (pkt->symbols[4] >> 3) & 1,
-												 (pkt->symbols[4] >> 4) & 1);
+		// printf("    NESN: %d  SN: %d  MD: %d\n", (pkt->symbols[4] >> 2) & 1,
+		// 										 (pkt->symbols[4] >> 3) & 1,
+		// 										 (pkt->symbols[4] >> 4) & 1);
 		sprintf(src,"    NESN: %d  SN: %d  MD: %d\n", (pkt->symbols[4] >> 2) & 1,
 												 (pkt->symbols[4] >> 3) & 1,
 												 (pkt->symbols[4] >> 4) & 1);
@@ -750,7 +751,7 @@ void lell_print(const lell_packet *pkt)
 					"LL_PING_RSP",
 					"Reserved for Future Use",
 				};
-				printf("    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
+				// printf("    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
 				sprintf(src, "    Opcode: %d / %s\n", opcode, opcode_str[(opcode<0x14)?opcode:0x14]);
 				strcat(data,src);
 				break;
@@ -758,17 +759,17 @@ void lell_print(const lell_packet *pkt)
 				break;
 		}
 	} else {
-		printf("Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
-		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
-		       pkt->length);
+		// printf("Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
+		//        pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
+		//        pkt->length);
 		sprintf(src, "Advertising / AA %08x (%s)/ %2d bytes\n", pkt->access_address, 
 		       pkt->flags.as_bits.access_address_ok ? "valid" : "invalid",
 		       pkt->length);
 		strcat(data,src);
-		printf("    Channel Index: %d\n", pkt->channel_idx);
+		// printf("    Channel Index: %d\n", pkt->channel_idx);
 		sprintf(src, "    Channel Index: %d\n", pkt->channel_idx);
 		strcat(data,src);
-		printf("    Type:  %s\n", lell_get_adv_type_str(pkt));
+		// printf("    Type:  %s\n", lell_get_adv_type_str(pkt));
 		sprintf(src, "    Type:  %s\n", lell_get_adv_type_str(pkt));
 		strcat(data,src);
 
@@ -779,15 +780,15 @@ void lell_print(const lell_packet *pkt)
 				// This function needs to return a string.
 				strcat(data, _dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add));
 				if (pkt->length-6 > 0) {
-					printf("    AdvData:");
+					// printf("    AdvData:");
 					sprintf(src, "    AdvData:");
 					strcat(data,src);
 					for (i = 0; i < pkt->length - 6; ++i){
-						printf(" %02x", pkt->symbols[12+i]);
+						// printf(" %02x", pkt->symbols[12+i]);
 						sprintf(src, " %02x", pkt->symbols[12+i]);
 						strcat(data,src);
 					}
-					printf("\n");
+					// printf("\n");
 					sprintf(src, "\n");
 					strcat(data,src);
 					// This function needs to return a string.
@@ -807,15 +808,15 @@ void lell_print(const lell_packet *pkt)
 			case SCAN_RSP:
 				// This function needs to return a string.
 				strcat(data,_dump_addr("AdvA:  ", pkt->symbols, 6, pkt->adv_tx_add));
-				printf("    ScanRspData:");
+				// printf("    ScanRspData:");
 				sprintf(src, "    ScanRspData:");
 				strcat(data,src);
 				for (i = 0; i < pkt->length - 6; ++i){
-					printf(" %02x", pkt->symbols[12+i]);
+					// printf(" %02x", pkt->symbols[12+i]);
 					sprintf(src, " %02x", pkt->symbols[12+i]);
 					strcat(data,src);
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src, "\n");
 				strcat(data,src);
 				// This function needs to return a string.
@@ -833,24 +834,24 @@ void lell_print(const lell_packet *pkt)
 				strcat(data,_dump_16("Latency: ", pkt->symbols, 30));
 				strcat(data,_dump_16("Timeout: ", pkt->symbols, 32));
 
-				printf("    ChM:");
+				// printf("    ChM:");
 				sprintf(src, "    ChM:");
 				strcat(data,src);
 				for (i = 0; i < 5; ++i){
-					printf(" %02x", pkt->symbols[34+i]);
+					// printf(" %02x", pkt->symbols[34+i]);
 					sprintf(src, " %02x", pkt->symbols[34+i]);
 					strcat(data,src);
 				}
-				printf("\n");
+				// printf("\n");
 				sprintf(src,"\n");
 				strcat(data,src);
 
-				printf("    Hop: %d\n", pkt->symbols[39] & 0x1f);
+				// printf("    Hop: %d\n", pkt->symbols[39] & 0x1f);
 				sprintf(src, "    Hop: %d\n", pkt->symbols[39] & 0x1f);
 				strcat(data,src);
-				printf("    SCA: %d, %s\n",
-						pkt->symbols[39] >> 5,
-						CONNECT_SCA[pkt->symbols[39] >> 5]);
+				// printf("    SCA: %d, %s\n",
+				// 		pkt->symbols[39] >> 5,
+				// 		CONNECT_SCA[pkt->symbols[39] >> 5]);
 				sprintf(src, "    SCA: %d, %s\n",
 						pkt->symbols[39] >> 5,
 						CONNECT_SCA[pkt->symbols[39] >> 5]);
@@ -859,37 +860,43 @@ void lell_print(const lell_packet *pkt)
 		}
 	}
 
-	printf("\n");
-	sprintf(src, "\n");
-	strcat(data,src);
-	printf("    Data: ");
-	sprintf(src, "    Data: ");
+	// printf("\n");
+	// printf("    Data: ");
+	sprintf(src, "\n    Data: ");
 	strcat(data,src);
 	for (i = 6; i < 6 + pkt->length; ++i){
-		printf(" %02x", pkt->symbols[i]);
+		// printf(" %02x", pkt->symbols[i]);
 		sprintf(src, " %02x", pkt->symbols[i]);
 		strcat(data,src);
 	}
-	printf("\n");
+	// printf("\n");
 	sprintf(src, "\n");
 	strcat(data,src);
 
-	printf("    CRC:  ");
+	// printf("    CRC:  ");
 	sprintf(src, "    CRC:  ");
 	strcat(data,src);
 	for (i = 0; i < 3; ++i){
-		printf(" %02x", pkt->symbols[6 + pkt->length + i]);
+		// printf(" %02x", pkt->symbols[6 + pkt->length + i]);
 		sprintf(src, " %02x", pkt->symbols[6 + pkt->length + i]);
 		strcat(data,src);
 	}
-	printf("\n");
-	sprintf(src, "\n");
+	// printf("\n");
+	sprintf(src, "\n\n**********************************\n");
 	strcat(data,src);
-	printf("\n\n****************************\nThis is the data:\n%s\n======================================\n",data);
-	// sprintf(command,"pcaps 1 packet \"%s\"",data);
-	// system(command);
-	memset(src, 0, sizeof src);
-	memset(data, 0, sizeof data);
-	memset(command, 0, sizeof command);
+	// printf("\n\n****************************\nThis is the data:\n");
+
+	if(counter >= 100){
+		counter = 0;
+		printf("\n\n****************************\nThis is the data:\n%s\n======================================\n",data);
+		sprintf(command,"pcaps 1 packet \"%s\"",data);
+		system(command);
+		memset(src, 0, sizeof src);
+		memset(data, 0, sizeof data);
+		memset(command, 0, sizeof command);
+	}
+	else{
+		++counter;
+	}
 
 }
