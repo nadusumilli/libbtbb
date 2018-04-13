@@ -693,7 +693,7 @@ print128:
 
 void lell_print(const lell_packet *pkt)
 {
-	char data[10000],src[1000], command[10050];
+	char data[10000],src[1000], command[10050], dataArray[101][10000];
 	int i, opcode;
 	static int counter=0;
 	if (lell_packet_is_data(pkt)) {
@@ -881,21 +881,27 @@ void lell_print(const lell_packet *pkt)
 		sprintf(src, " %02x", pkt->symbols[6 + pkt->length + i]);
 		strcat(data,src);
 	}
-	// printf("\n");
-	sprintf(src, "\n\n**********************************\n");
-	strcat(data,src);
+
 	// printf("\n\n****************************\nThis is the data:\n");
 
-	if(counter >= 100){
+	if(counter <= 100){
+		strcat(dataArray[counter], data);
 		counter = 0;
-		printf("\n\n****************************\nThis is the data:\n%s\n======================================\n",data);
-		sprintf(command,"pcaps 1 packet \"%s\"",data);
+		printf("\n\n****************************\nThis is the data:\n%s\n======================================\n",dataArray);
+		sprintf(command,"pcaps 1 packet \"%s\"",dataArray);
 		system(command);
 		memset(src, 0, sizeof src);
-		memset(data, 0, sizeof data);
 		memset(command, 0, sizeof command);
+		memset(dataArray, 0, sizeof dataArray);
+		memset(data, 0, sizeof data);
+		free(dataArray);
+		free(command);
+		free(str);
+		free(data);
 	}
 	else{
+		strcat(dataArray[counter],data);
+		memset(data, 0, sizeof data);
 		++counter;
 	}
 
